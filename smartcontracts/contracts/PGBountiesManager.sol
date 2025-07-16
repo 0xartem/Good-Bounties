@@ -149,20 +149,24 @@ contract PGBountiesManager is ERC721URIStorage, IPGBountiesHandler {
 
     function fetchBounties() external view returns (Bounty[] memory) {
         uint256 itemCount = tokenIds.current();
-        uint256 currentIndex = 0;
-
-        Bounty[] memory items;
-
-        for (uint256 i = 0; i < itemCount; i++) {
-            if (idToBounties[i + 1].state == PGBountyState.OPEN) {
-                uint256 currentId = i + 1;
-
-                Bounty storage currentItem = idToBounties[currentId];
-                items[currentIndex] = currentItem;
-                currentIndex += 1;
+        uint256 openBountyCount = 0;
+        
+        for (uint256 i = 1; i <= itemCount; i++) {
+            if (idToBounties[i].state == PGBountyState.OPEN) {
+                openBountyCount++;
             }
         }
-
+        
+        Bounty[] memory items = new Bounty[](openBountyCount);
+        uint256 currentIndex = 0;
+        
+        for (uint256 i = 1; i <= itemCount; i++) {
+            if (idToBounties[i].state == PGBountyState.OPEN) {
+                items[currentIndex] = idToBounties[i];
+                currentIndex++;
+            }
+        }
+        
         return items;
     }
 
